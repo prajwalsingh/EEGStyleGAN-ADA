@@ -1,5 +1,5 @@
 # EEGStyleGAN-ADA
-Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brain Recordings." [Accepted in WACV 2024]
+Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brain Recordings." [Accepted in WACV 2024]  [[Paper](https://arxiv.org/abs/2310.16532)]
 
 1. Anaconda environment yml file is present in the Anaconda folder. Use it to create a conda environment.
 2. For StyleGAN-ADA, we have used the official Pytorch implementation. [[link]](https://github.com/NVlabs/stylegan2-ada-pytorch)
