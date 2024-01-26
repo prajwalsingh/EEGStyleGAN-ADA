@@ -35,3 +35,7 @@ Decoding the human brain has been a hallmark of neuroscientists and Artificial I
 | CVPR40 Dataset (40 Classes)  | ThoughtViz Dataset (10 Classes) |
 |---|---|
 | <img src="https://github.com/prajwalsingh/EEGStyleGAN-ADA/blob/main/images/seed0000-min.png" width="512px" height="512px"/>  | <img src="https://github.com/prajwalsingh/EEGStyleGAN-ADA/blob/main/images/fakes005725-min.png" width="512px" height="512px"/>  |
+
+## References
+
+* StyleGAN2-ADA [[Link](https://github.com/NVlabs/stylegan2-ada-pytorch)]
