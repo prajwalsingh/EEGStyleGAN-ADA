@@ -3,9 +3,12 @@ Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brai
 
 1. Anaconda environment yml file is present in the Anaconda folder. Use it to create a conda environment.
 2. For StyleGAN-ADA, we have used the official Pytorch implementation. [[link]](https://github.com/NVlabs/stylegan2-ada-pytorch)
-<!-- 4. Some network weights are not added due to file size restrictions on GitHub, and it's impossible to add them here without breaking anonymity so we will release it later. -->
 3. Command to train the GAN is mentioned in the Txt file.
 4. EEGClip code is unstructured.
+5. Checkpoints:
+   * EEGStyleGAN-ADA-CVPR40 [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EXn-8R80rxtHjlMCzPfhL9UBj80opHXyq3MnBBXXE6IsQw?e=Xbt2zO)]
+   * EEGStyleGAN-ADA-thoughtviz [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EcfBxiKOk1NEqMDvE7juYlYB8wb0mKkWcc1RQmb9Ze8TUQ?e=HrzBsU)]
+   * EEGClip [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/Ec28u_yuWJVCmXNBjx6OldgBF0vtme6LXvzKP80V23uHKw?e=VTZqme)]
 
 ## Introduction
 
