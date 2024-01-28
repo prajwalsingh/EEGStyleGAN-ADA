@@ -9,6 +9,7 @@ Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brai
    * EEGStyleGAN-ADA-CVPR40 [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EXn-8R80rxtHjlMCzPfhL9UBj80opHXyq3MnBBXXE6IsQw?e=Xbt2zO)]
    * EEGStyleGAN-ADA-thoughtviz [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EcfBxiKOk1NEqMDvE7juYlYB8wb0mKkWcc1RQmb9Ze8TUQ?e=HrzBsU)]
    * EEGClip [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/Ec28u_yuWJVCmXNBjx6OldgBF0vtme6LXvzKP80V23uHKw?e=VTZqme)]
+   * Image2Image (imageckpt) [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EQuJKUdXz8lGn04O2KSwsAUBUdsL-rjj0FdDwNH1Z8V9jw?e=716Xuq)]
 
 ## Config
 
