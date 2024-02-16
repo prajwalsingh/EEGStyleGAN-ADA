@@ -11,6 +11,10 @@ Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brai
    * EEGClip [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/Ec28u_yuWJVCmXNBjx6OldgBF0vtme6LXvzKP80V23uHKw?e=VTZqme)]
    * Image2Image (imageckpt) [[link](https://iitgnacin-my.sharepoint.com/:u:/g/personal/19210048_iitgn_ac_in/EQuJKUdXz8lGn04O2KSwsAUBUdsL-rjj0FdDwNH1Z8V9jw?e=716Xuq)]
 
+## Notes
+
+Previous work EEG2IMAGE: Image Reconstruction from EEG Brain Signals [[Link](https://arxiv.org/abs/2302.10121)] (ICASSP 2023).
+
 ## Config
 
 <pre>
