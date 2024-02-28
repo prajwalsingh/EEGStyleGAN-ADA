@@ -13,7 +13,8 @@ Pytorch code of paper "Learning Robust Deep Visual Representations from EEG Brai
 
 ## Notes
 
-Previous work EEG2IMAGE: Image Reconstruction from EEG Brain Signals [[Link](https://arxiv.org/abs/2302.10121)] (ICASSP 2023).
+* Previous work EEG2IMAGE: Image Reconstruction from EEG Brain Signals [[Link](https://arxiv.org/abs/2302.10121)] (ICASSP 2023).
+* For EEGClip please check this issue [[link](https://github.com/prajwalsingh/EEGStyleGAN-ADA/issues/9#issuecomment-1969719968)].
 
 ## Config
 
