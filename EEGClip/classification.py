@@ -36,8 +36,6 @@ x_train_eeg = []
 x_train_image = []
 labels = []
 
-print(device)
-
 for i in tqdm(natsorted(os.listdir(base_path + train_path))):
     loaded_array = np.load(base_path + train_path + i, allow_pickle=True)
     eeg_temp = loaded_array[1].T
@@ -89,7 +87,7 @@ x_val_eeg = torch.from_numpy(x_val_eeg).float().to(device)
 x_val_image = torch.from_numpy(x_val_image).float().to(device)
 labels_val = torch.from_numpy(labels_val).long().to(device)
 
-model_path = '/home/brainimage/brain2image/code_v9/EXPERIMENT_185/checkpoints/'
+model_path = 'checkpoints/'
 print(natsorted(os.listdir(model_path)))
 
 for i in reversed(natsorted(os.listdir(model_path))):
@@ -100,14 +98,14 @@ for i in reversed(natsorted(os.listdir(model_path))):
     model_path_c = model_path + i
 
     checkpoint = torch.load(model_path_c, map_location=device)
-    eeg_embedding = EEG_Encoder().to(device)
+    eeg_embedding = EEG_Encoder(projection_dim=projection_dim).to(device)
 
     image_embedding = resnet50(pretrained=False).to(device)
     num_features = image_embedding.fc.in_features
-    # image_embedding.fc = nn.Sequential(
-    #     nn.ReLU(),
-    #     nn.Linear(num_features, config.embedding_dim, bias=False)
-    # )
+    image_embedding.fc = nn.Sequential(
+        nn.ReLU(),
+        nn.Linear(num_features, config.embedding_dim, bias=False)
+    )
 
     # image_embedding.fc = nn.Sequential(
     # nn.ReLU(),
@@ -117,13 +115,13 @@ for i in reversed(natsorted(os.listdir(model_path))):
     # nn.Linear(config.embedding_dim, config.embedding_dim, bias=False),
     # )
 
-    image_embedding.fc = nn.Sequential(
-        nn.ReLU(),
-        nn.Linear(num_features, config.embedding_dim, bias=True),
-        nn.Dropout(0.1),
-        nn.ReLU(),
-        nn.Linear(config.embedding_dim, config.embedding_dim, bias=False),
-    )
+    # image_embedding.fc = nn.Sequential(
+    # nn.ReLU(),
+    # nn.Linear(num_features, config.embedding_dim, bias=True),
+    # nn.Dropout(0.1),
+    # nn.ReLU(),
+    # nn.Linear(config.embedding_dim, config.embedding_dim, bias=False),
+    # )
 
     image_embedding.fc.to(device)
 
@@ -176,21 +174,21 @@ for i in reversed(natsorted(os.listdir(model_path))):
         val_acc = 100 * correct / 1994
         return val_acc
 
-    dir_info  = natsorted(glob('EXPERIMENT_*'))
+    dir_info  = natsorted(glob('FineTuning/EXPERIMENT_*'))
     if len(dir_info)==0:
         experiment_num = 1
     else:
         experiment_num = int(dir_info[-1].split('_')[-1]) + 1
 
-    if not os.path.isdir('EXPERIMENT_{}'.format(experiment_num)):
-        os.makedirs('EXPERIMENT_{}'.format(experiment_num))
-        os.makedirs('EXPERIMENT_{}/val/tsne'.format(experiment_num))
-        os.makedirs('EXPERIMENT_{}/train/tsne/'.format(experiment_num))
-        os.makedirs('EXPERIMENT_{}/test/tsne/'.format(experiment_num))
-        os.makedirs('EXPERIMENT_{}/test/umap/'.format(experiment_num))
-        os.system('cp *.py EXPERIMENT_{}'.format(experiment_num))
+    if not os.path.isdir('FineTuning/EXPERIMENT_{}'.format(experiment_num)):
+        os.makedirs('FineTuning/EXPERIMENT_{}'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/val/tsne'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/train/tsne/'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/test/tsne/'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/test/umap/'.format(experiment_num))
+        os.system('cp *.py FineTuning/EXPERIMENT_{}'.format(experiment_num))
 
-    ckpt_lst = natsorted(glob('EXPERIMENT_{}/checkpoints/eegfeat_*.pth'.format(experiment_num)))
+    ckpt_lst = natsorted(glob('FineTuning/EXPERIMENT_{}/checkpoints/eegfeat_*.pth'.format(experiment_num)))
 
     START_EPOCH = 0
 
@@ -204,8 +202,8 @@ for i in reversed(natsorted(os.listdir(model_path))):
         print('Loading checkpoint from previous epoch: {}'.format(START_EPOCH))
         START_EPOCH += 1
     else:
-        os.makedirs('EXPERIMENT_{}/checkpoints/'.format(experiment_num))
-        os.makedirs('EXPERIMENT_{}/bestckpt/'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/checkpoints/'.format(experiment_num))
+        os.makedirs('FineTuning/EXPERIMENT_{}/bestckpt/'.format(experiment_num))
 
     best_val_acc   = 0.0
     best_val_epoch = 0
@@ -224,7 +222,7 @@ for i in reversed(natsorted(os.listdir(model_path))):
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                }, 'EXPERIMENT_{}/bestckpt/eegfeat_{}_{}.pth'.format(experiment_num, best_val_epoch, val_acc))
+                }, 'FineTuning/EXPERIMENT_{}/bestckpt/eegfeat_{}_{}.pth'.format(experiment_num, best_val_epoch, val_acc))
     del model
     torch.cuda.empty_cache()
     gc.collect()

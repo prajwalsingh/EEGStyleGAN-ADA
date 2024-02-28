@@ -13,7 +13,7 @@ np.random.seed(45)
 random.seed(45)
 
 class EEG_Encoder(nn.Module):
-    def __init__(self, n_classes=40, in_channels=128, n_features=128, projection_dim=256, num_layers=1):
+    def __init__(self, n_classes=40, in_channels=128, n_features=128, projection_dim=128, num_layers=1):
         super(EEG_Encoder, self).__init__()
         self.hidden_size= n_features
         self.num_layers = num_layers
