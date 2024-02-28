@@ -137,7 +137,7 @@ for i in l:
         param.requires_grad = False
 
     new_layer = nn.Sequential(
-        nn.Linear(num_features, 128, bias=True),
+        nn.Linear(config.embedding_dim, 128, bias=True),
         nn.ReLU(),
         nn.Dropout(0.1),
         nn.Linear(128, 128, bias=True),
@@ -147,15 +147,15 @@ for i in l:
         nn.Softmax(dim=1)
     )
 
-    # model.fc = nn.Sequential(
-    # model.fc,
-    # new_layer
-    # )
+    model.fc = nn.Sequential(
+    model.fc,
+    new_layer
+    )
 
     # for param in model.parameters():
     #     param.requires_grad = False
 
-    model.fc[-1] = new_layer
+    # model.fc[-1] = new_layer
 
     model = model.to(config.device)
     # summary(model, (3, 224, 224))
