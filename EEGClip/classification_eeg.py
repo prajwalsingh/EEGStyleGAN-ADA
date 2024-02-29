@@ -31,6 +31,7 @@ batch_size      = config.batch_size
 embedding_dim   = config.embedding_dim
 projection_dim  = config.projection_dim
 num_layers      = config.num_layers
+epochs          = config.epoch
 
 # load the dataset
 x_train_eeg = []
@@ -197,7 +198,6 @@ for i in reversed(natsorted(os.listdir(model_path))):
 
     best_val_acc   = 0.0
     best_val_epoch = 0
-    epochs = 250
 
     for epoch in range(START_EPOCH, epochs):
 
