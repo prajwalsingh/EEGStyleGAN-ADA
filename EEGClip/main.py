@@ -78,91 +78,13 @@ def train(preprocess, model, temperature, optimizer, scheduler, START_EPOCH, num
             tq.set_description('[%d, %5d] loss: %.3f' %
                     (epoch + 1, batch_idx + 1, running_loss / (batch_idx+1.0)))
                 
-            EEG_embedding        = np.concatenate((EEG_embedding, EEG_feat.cpu().detach().numpy()), axis=0) if EEG_embedding.size else EEG_feat.cpu().detach().numpy()
-            image_embeddings      = np.concatenate((image_embeddings, image_feat.cpu().detach().numpy()), axis=0) if image_embeddings.size else image_feat.cpu().detach().numpy()
-            EEG_embedding_proj   = np.concatenate((EEG_embedding_proj, EEG_embed.cpu().detach().numpy()), axis=0) if EEG_embedding_proj.size else EEG_embed.cpu().detach().numpy()
-            image_embeddings_proj = np.concatenate((image_embeddings_proj, image_embed.cpu().detach().numpy()), axis=0) if image_embeddings_proj.size else image_embed.cpu().detach().numpy()
-            labels_array          = np.concatenate((labels_array, labels.cpu().detach().numpy()), axis=0) if labels_array.size else labels.cpu().detach().numpy()
-            
-            # print(EEG_embedding[:2],image_embeddings[:2])
-        # scheduler.step()
-        # pd.DataFrame(EEG_embedding_proj).to_csv("/home/brainimage/brain2image/code_v7/EEG_embed_train.csv")
-        # pd.DataFrame(image_embeddings_proj).to_csv("/home/brainimage/brain2image/code_v7/image_embed_train.csv")
-            
-            
-        # if epoch % 5 == 0:
-        # ### compute k-means score on the EEG and image embeddings
-        #     num_clusters = 40
-        #     k_means = K_means(n_clusters=num_clusters)
-        #     (clustered_EEG_label, clustered_image_label), (EEG_score, image_score) = k_means.transform(EEG_embedding, image_embeddings, labels_array, labels_array)
-        #     k_means_proj = K_means(n_clusters=num_clusters)
-        #     (clustered_EEG_label, clustered_image_label), (EEG_score_proj, image_score_proj) = k_means_proj.transform(EEG_embedding_proj, image_embeddings_proj, labels_array, labels_array)
-        #     print(f"EEG KMeans score{epoch}:", EEG_score)
-        #     print(f"Image KMeans score{epoch}:", image_score)
-        #     print(f"EEG KMeans score proj{epoch}:", EEG_score_proj)
-        #     print(f"Image KMeans score proj{epoch}:", image_score_proj)
-        #     # print(clustered_EEG_label)
-        
         if epoch == 32 or epoch == 64 or epoch == 128 or epoch == 256 or epoch == 512 or epoch == 1024 or epoch == 1536 or epoch == 2048 or epoch == 2560 or epoch == 3072 or epoch == 3584 or epoch == 4096:
             torch.save({
                     'epoch': epoch,
                     'model_state_dict': model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
-            }, 'EXPERIMENT_{}/checkpoints/clip_{}.pth'.format(experiment_num, epoch)) 
-        
-# def validate(preprocess, model, temperature, experiment_num):
-#     EEG_embedding = np.array([])
-#     image_embeddings = np.array([])
-#     EEG_embedding_proj = np.array([])
-#     image_embeddings_proj = np.array([])
-#     labels_array = np.array([])
-#     logsoftmax   = nn.LogSoftmax(dim=-1)
-    
-#     with torch.no_grad():
-#         total_loss = 0.0        
-#         for batch_idx, (EEGs, images, labels) in enumerate(tqdm(val_data_loader)):
-#             # get the embeddings for the EEG and images
-#             EEGs, images, labels = EEGs.to(device), images.to(device), labels.to(device)
-#             images = preprocess(images)
-#             EEG_embed, image_embed, EEG_feat, image_feat = model(EEGs, images)
-            
-#             logits = (EEG_embed @ image_embed.T) / temperature
-#             images_similarity = image_embed @ image_embed.T
-#             EEGs_similarity = EEG_embed @ EEG_embed.T
-            
-#             targets = F.softmax(
-#                 (images_similarity + EEGs_similarity) / 2 * temperature, dim=-1
-#             )
-#             # EEGs_loss = F.cross_entropy(logits, targets, reduction='none')
-#             # images_loss = F.cross_entropy(logits.T, targets.T, reduction='none')
-#             # loss =  (images_loss + EEGs_loss) / 2.0
-#             images_loss = cross_entropy(logits.T, targets.T, reduction='none')
-#             EEGs_loss  = cross_entropy(logits, targets, reduction='none')
-#             loss        = (images_loss + EEGs_loss) / 2.0
-#             total_loss += loss.mean().item()
-            
-#             EEG_embedding = np.concatenate((EEG_embedding, EEG_feat.cpu().numpy()), axis=0) if EEG_embedding.size else EEG_feat.cpu().numpy()
-#             image_embeddings = np.concatenate((image_embeddings, image_feat.cpu().numpy()), axis=0) if image_embeddings.size else image_feat.cpu().numpy()
-#             EEG_embedding_proj   = np.concatenate((EEG_embedding_proj, EEG_embed.cpu().detach().numpy()), axis=0) if EEG_embedding_proj.size else EEG_embed.cpu().detach().numpy()
-#             image_embeddings_proj = np.concatenate((image_embeddings_proj, image_embed.cpu().detach().numpy()), axis=0) if image_embeddings_proj.size else image_embed.cpu().detach().numpy()
-#             labels_array = np.concatenate((labels_array, labels.cpu().numpy()), axis=0) if labels_array.size else labels.cpu().numpy()
-            
-#         # pd.DataFrame(EEG_embedding_proj).to_csv("/home/brainimage/brain2image/code_v7/EEG_embed.csv")
-#         # pd.DataFrame(image_embeddings_proj).to_csv("/home/brainimage/brain2image/code_v7/image_embed.csv")
-            
-#         print('Validation loss: {}'.format(total_loss / len(val_data_loader)))
-        
-#     ### compute k-means score and Umap score on the EEG and image embeddings
-#     num_clusters = 40
-#     k_means = K_means(n_clusters=num_clusters)
-#     (clustered_EEG_label, clustered_image_label), (EEG_score, image_score) = k_means.transform(EEG_embedding, image_embeddings, labels_array, labels_array)
-#     k_means_proj = K_means(n_clusters=num_clusters)
-#     (clustered_EEG_label, clustered_image_label), (EEG_score_proj, image_score_proj) = k_means_proj.transform(EEG_embedding_proj, image_embeddings_proj, labels_array, labels_array)
-#     print(f"EEG KMeans score{epoch}:", EEG_score)
-#     print(f"Image KMeans score{epoch}:", image_score)
-#     print(f"EEG KMeans score proj{epoch}:", EEG_score_proj)
-#     print(f"Image KMeans score proj{epoch}:", image_score_proj)
-#     print(clustered_EEG_label)
+            }, 'EEGClip_ckpt/EXPERIMENT_{}/checkpoints/clip_{}.pth'.format(experiment_num, epoch)) 
+
         
 #load the data
 ## Training data
@@ -234,22 +156,16 @@ val_data = torch.utils.data.TensorDataset(x_val_eeg, x_val_image, labels_val)
 val_data_loader = torch.utils.data.DataLoader(val_data, batch_size = batch_size, shuffle=True)
 
 # ## define the model
-eeg_embedding = EEG_Encoder().to(device)
+eeg_embedding = EEG_Encoder(projection_dim=projection_dim, num_layers=num_layers).to(device)
 image_embedding = torchvision.models.resnet50(pretrained=True).to(device)
 weights = ResNet50_Weights.DEFAULT
 preprocess = weights.transforms().to(device)
 
 for param in image_embedding.parameters():
     param.requires_grad = False
+
 num_features = image_embedding.fc.in_features
-## add relu
-# image_embedding.fc = nn.Sequential(
-#     nn.ReLU(),
-#     nn.Linear(num_features, config.embedding_dim, bias=True),
-#     nn.Dropout(0.1),
-#     nn.ReLU(),
-#     nn.Linear(config.embedding_dim, config.embedding_dim, bias=False),
-# )
+
 image_embedding.fc = nn.Sequential(
         nn.ReLU(),
         nn.Linear(num_features, config.embedding_dim, bias=False)
@@ -262,19 +178,19 @@ optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 # optimizer = torch.optim.SGD(model.parameters(), lr=3e-3, weight_decay=0.003)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer_image, T_max=1024, eta_min=3e-4)
 scheduler = None
-dir_info  = natsorted(glob('EXPERIMENT_*'))
+dir_info  = natsorted(glob('EEGClip_ckpt/EXPERIMENT_*'))
 if len(dir_info)==0:
     experiment_num = 1
 else:
     experiment_num = int(dir_info[-1].split('_')[-1])  + 1
 
-if not os.path.isdir('EXPERIMENT_{}'.format(experiment_num)):
-    os.makedirs('EXPERIMENT_{}'.format(experiment_num))
-    os.makedirs('EXPERIMENT_{}/umap'.format(experiment_num))
-    os.makedirs('EXPERIMENT_{}/tsne'.format(experiment_num))
-    os.system('cp *.py EXPERIMENT_{}'.format(experiment_num))
+if not os.path.isdir('EEGClip_ckpt/EXPERIMENT_{}'.format(experiment_num)):
+    os.makedirs('EEGClip_ckpt/EXPERIMENT_{}'.format(experiment_num))
+    os.makedirs('EEGClip_ckpt/EXPERIMENT_{}/umap'.format(experiment_num))
+    os.makedirs('EEGClip_ckpt/EXPERIMENT_{}/tsne'.format(experiment_num))
+    os.system('cp *.py EEGClip_ckpt/EXPERIMENT_{}'.format(experiment_num))
 
-ckpt_lst = natsorted(glob('EXPERIMENT_{}/checkpoints/clip_*.pth'.format(experiment_num)))
+ckpt_lst = natsorted(glob('EEGClip_ckpt/EXPERIMENT_{}/checkpoints/clip_*.pth'.format(experiment_num)))
 print(experiment_num)
 START_EPOCH = 0
 
@@ -289,11 +205,8 @@ if len(ckpt_lst)>=1:
     print('Loading checkpoint from previous epoch: {}'.format(START_EPOCH))
     START_EPOCH += 1
 else:
-    os.makedirs('EXPERIMENT_{}/checkpoints/'.format(experiment_num))
-
+    os.makedirs('EEGClip_ckpt/EXPERIMENT_{}/checkpoints/'.format(experiment_num))
 
 train(preprocess, model, 0.5, optimizer, scheduler, START_EPOCH, epoch, experiment_num)
-
-# validate(preprocess, model, 0.5, experiment_num)
 
 print('completed')

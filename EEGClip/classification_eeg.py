@@ -1,6 +1,5 @@
 ## Take input of EEG and save it as a numpy array
 import config
-import os 
 from tqdm import tqdm
 import numpy as np
 import pdb
@@ -16,7 +15,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
-from torchsummary import summary
 
 from EEG_encoder import EEG_Encoder
 from model import ModifiedResNet
@@ -90,14 +88,10 @@ x_val_eeg = torch.from_numpy(x_val_eeg).float().to(device)
 x_val_image = torch.from_numpy(x_val_image).float().to(device)
 labels_val = torch.from_numpy(labels_val).long().to(device)
 
-val_data = torch.utils.data.TensorDataset(x_val_eeg, x_val_image, labels_val)
-val_loader = torch.utils.data.DataLoader(val_data, batch_size = batch_size, shuffle=True)
-
 model_path = 'EEGClip_ckpt/EXPERIMENT_2/checkpoints/'
 print(natsorted(os.listdir(model_path)))
 
-l = reversed(natsorted(os.listdir(model_path)))
-for i in l:
+for i in reversed(natsorted(os.listdir(model_path))):
 
     print("#########################################################################################")
     print('Model: ', i)
@@ -108,9 +102,6 @@ for i in l:
     eeg_embedding = EEG_Encoder(projection_dim=projection_dim, num_layers=num_layers).to(device)
 
     image_embedding = resnet50(pretrained=False).to(device)
-    weights = ResNet50_Weights.DEFAULT
-    preprocess = weights.transforms()
-
     num_features = image_embedding.fc.in_features
 
     image_embedding.fc = nn.Sequential(
@@ -124,26 +115,25 @@ for i in l:
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(config.device)
 
-    model = model.image_encoder
+    model = model.text_encoder
 
     for param in model.parameters():
         param.requires_grad = True
 
     new_layer = nn.Sequential(
-        nn.Linear(config.embedding_dim, 128, bias=True),
+        nn.Linear(config.embedding_dim, 256),
         nn.ReLU(),
         nn.Dropout(0.1),
-        nn.Linear(128, 40),
+        nn.Linear(256, 40),
         nn.Softmax(dim=1)
     )
 
     model.fc = nn.Sequential(
-    model.fc,
-    new_layer
+        model.fc,
+        new_layer
     )
 
     model = model.to(config.device)
-    # summary(model, (3, 224, 224))
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
@@ -154,9 +144,8 @@ for i in l:
         for i, data in enumerate(data_loader, 0):
             inputs_eeg, inputs_image, labels = data
             inputs_eeg, inputs_image, labels = inputs_eeg.to(device), inputs_image.to(device), labels.to(device)
-            inputs_image = preprocess(inputs_image)
             optimizer.zero_grad()
-            outputs = model(inputs_image)
+            outputs = model(inputs_eeg)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -168,34 +157,28 @@ for i in l:
 
     def evaluate(model):
         model.eval()
-        total_correct = 0
-        for i, data in tqdm(enumerate(val_loader, 0)):
-            inputs_eeg, inputs_image, labels = data
-            inputs_eeg, inputs_image, labels = inputs_eeg.to(device), inputs_image.to(device), labels.to(device)
-            inputs_image = preprocess(inputs_image)
-            with torch.no_grad():
-                outputs = model(inputs_image)
-                _, predicted = torch.max(outputs.data, 1)
-            correct = (predicted == labels).sum().item()
-            total_correct += correct
-        print('Accuracy of the network %d %%' % (100 * total_correct / 1994))
-        return (100 * total_correct / 1994)
+        outputs = model(x_val_eeg)
+        _, predicted = torch.max(outputs.data, 1)
+        correct = (predicted == labels_val).sum().item()
+        print('Accuracy of the network %d %%' % (100 * correct / 1994))
+        val_acc = 100 * correct / 1994
+        return val_acc
 
-    dir_info  = natsorted(glob('FineTuningImg/EXPERIMENT_*'))
+    dir_info  = natsorted(glob('FineTuningEEG/EXPERIMENT_*'))
     if len(dir_info)==0:
         experiment_num = 1
     else:
         experiment_num = int(dir_info[-1].split('_')[-1]) + 1
 
-    if not os.path.isdir('FineTuningImg/EXPERIMENT_{}'.format(experiment_num)):
-        os.makedirs('FineTuningImg/EXPERIMENT_{}'.format(experiment_num))
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/val/tsne'.format(experiment_num))
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/train/tsne/'.format(experiment_num))
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/test/tsne/'.format(experiment_num))
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/test/umap/'.format(experiment_num))
-        os.system('cp *.py FineTuningImg/EXPERIMENT_{}'.format(experiment_num))
+    if not os.path.isdir('FineTuningEEG/EXPERIMENT_{}'.format(experiment_num)):
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/val/tsne'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/train/tsne/'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/test/tsne/'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/test/umap/'.format(experiment_num))
+        os.system('cp *.py FineTuningEEG/EXPERIMENT_{}'.format(experiment_num))
 
-    ckpt_lst = natsorted(glob('FineTuningImg/EXPERIMENT_{}/checkpoints/imgfeat_*.pth'.format(experiment_num)))
+    ckpt_lst = natsorted(glob('FineTuningEEG/EXPERIMENT_{}/checkpoints/eegfeat_*.pth'.format(experiment_num)))
 
     START_EPOCH = 0
 
@@ -209,12 +192,12 @@ for i in l:
         print('Loading checkpoint from previous epoch: {}'.format(START_EPOCH))
         START_EPOCH += 1
     else:
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/checkpoints/'.format(experiment_num))
-        os.makedirs('FineTuningImg/EXPERIMENT_{}/bestckpt/'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/checkpoints/'.format(experiment_num))
+        os.makedirs('FineTuningEEG/EXPERIMENT_{}/bestckpt/'.format(experiment_num))
 
     best_val_acc   = 0.0
     best_val_epoch = 0
-    epochs = 200
+    epochs = 250
 
     for epoch in range(START_EPOCH, epochs):
 
@@ -229,4 +212,7 @@ for i in l:
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                }, 'FineTuningImg/EXPERIMENT_{}/bestckpt/imgfeat_{}_{}.pth'.format(experiment_num, best_val_epoch, val_acc))
+                }, 'FineTuningEEG/EXPERIMENT_{}/bestckpt/eegfeat_{}_{}.pth'.format(experiment_num, best_val_epoch, val_acc))
+    del model
+    torch.cuda.empty_cache()
+    gc.collect()
