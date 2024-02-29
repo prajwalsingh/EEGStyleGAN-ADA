@@ -30,5 +30,5 @@ num_layers     = 1
 batch_size     = 64
 test_batch_size= 64
 epoch          = 2049
-epoch          = 251 # for fine-tuning
+# epoch          = 251 # for fine-tuning
 temperature    = 0.5
