@@ -133,8 +133,8 @@ for i in l:
 
     model = model.image_encoder
 
-    for param in model.parameters():
-        param.requires_grad = False
+    # for param in model.parameters():
+    #     param.requires_grad = False
 
     new_layer = nn.Sequential(
         nn.Linear(config.embedding_dim, 128, bias=True),
