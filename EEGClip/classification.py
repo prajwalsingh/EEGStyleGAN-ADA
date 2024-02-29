@@ -132,8 +132,8 @@ for i in reversed(natsorted(os.listdir(model_path))):
     model = model.text_encoder
     num_features = model.fc.in_features
 
-    for param in model.parameters():
-        param.requires_grad = False
+    # for param in model.parameters():
+    #     param.requires_grad = False
 
     model.fc = nn.Sequential(
         nn.Linear(num_features, 256),
