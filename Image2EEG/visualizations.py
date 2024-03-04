@@ -8,7 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from matplotlib import style
-style.use('seaborn')
+# style.use('seaborn')
 font = {'family' : 'sans-serif',
         # 'weight' : 'bold',
         'size'   : 35}

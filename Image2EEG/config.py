@@ -11,10 +11,10 @@ warnings.warn = warn
 
 
 
-base_path       = '/path to data folder/'
-train_path      = 'data/eeg_imagenet40_cvpr_2017_raw/train/'
-validation_path = 'data/eeg_imagenet40_cvpr_2017_raw/val/'
-test_path       = 'data/eeg_imagenet40_cvpr_2017_raw/test/'
+base_path       = '../../../data/'
+train_path      = 'eeg_imagenet40_cvpr_2017_raw/train/'
+validation_path = 'eeg_imagenet40_cvpr_2017_raw/val/'
+test_path       = 'eeg_imagenet40_cvpr_2017_raw/test/'
 
 # base_path       = '/media/A/'
 # train_path      = 'dataset/eeg_imagenet40_cvpr_2017_raw/train/'
